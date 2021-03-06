@@ -1,0 +1,92 @@
+{% extends 'blog_base.html' %}
+
+{% block content %}
+    <div class="content-body">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8">
+                    <article class="post post-1">
+                        <header class="entry-header">
+                            <h1 class="entry-title">{{ article.title }}</h1>
+                            <span id="article_id" style="display: none">{{ article_id }}</span>
+                            <div class="entry-meta">
+                                <span class="post-category"><a href="#">hello world</a></span>
+                                <span class="post-date"><a href="#"><time class="entry-date"
+                                                                          datetime="2012-11-09T23:15:57+00:00">{{ article.created_time|date:'Y年m月d日' }}</time></a></span>
+                                <span class="post-author"><a href="#">作者: {{ article.author }}</a></span>
+                                <span class="comments-link"><a href="#">评论</a></span>
+                                <span class="views-count"><a href="#">{{ article.read_count }}浏览量</a></span>
+                            </div>
+                        </header>
+                        <div class="entry-content clearfix">
+                            <p>{{ article.content|safe }}</p>
+                            {% if previous_blog %}
+                                <p>上一篇:<a href="/detail.html/{{ previous_id }}/">{{ previous_blog }}</a></p>
+                            {% else %}
+                                <p>上一篇:<a>到头了......</a></p>
+                            {% endif %}
+
+                            {% if next_blog %}
+                                <p>下一篇:<a href="/detail.html/{{ next_id }}/">{{ next_blog }}</a></p>
+                            {% else %}
+                                <p>下一篇:<a>到底了......</a></p>
+                            {% endif %}
+                        </div>
+                    </article>
+                    <section class="comment-area" id="comment-area">
+
+                        <hr>
+                        <h3>发表评论</h3>
+                        <form method="POST" class="comment-form">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {% if request.user.is_authenticated %}
+                                        <label for="id_comment">昵称：{{ request.user.username }}</label>
+                                        <textarea name="comment" id="id_comment" required></textarea>
+                                        <p id="tips">请先写评论再发表</p>
+                                        <button type="button" class="comment-btn">发表</button>
+                                    {% else %}
+                                        <p>
+                                            请先
+                                            <a href="{% url 'account_login' %}" style="color: orangered">登录</a>
+                                            后发表评论
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>    <!-- row -->
+                        </form>
+                        <div class="comment-list-panel">
+                            <ul class="comment-list list-unstyled">
+                                {% for comment in comment_list %}
+                                    <li class="comment-item">
+                                        <span class="nickname">{{ comment.author }}</span>
+                                        <time class="submit-date">{{ comment.created_time }}</time>
+                                        <div class="text">{{ comment }}</div>
+                                        <span style="display: none">{{ comment.nid }}</span>
+                                        <span id="reply" style="cursor: pointer">回复</span>
+                                        {% if request.user.is_authenticated %}
+                                            {% if request.user.username == comment.author %}
+                                                <span class="delete" style="cursor: pointer">删除</span>
+                                            {% endif %}
+                                        {% endif %}
+                                        <script>
+                                            $(function () {
+                                                $('#reply').click(function () {
+                                                    alert(123)
+                                                })
+                                            })
+                                        </script>
+                                        {#                                        <div class="delete"><button>删除</button></div>#}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </section>
+                </main>
+                {{ block.super }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
